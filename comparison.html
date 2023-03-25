@@ -1,0 +1,802 @@
+<!--
+
+To run this demo, you need to replace 'YOUR_API_KEY' with an API key from the ArcGIS Developer dashboard.
+
+Sign up for a free account and get an API key.
+
+https://developers.arcgis.com/documentation/mapping-apis-and-services/get-started/
+
+ -->
+ <html lang="en">
+
+ <head>
+     <meta charset="utf-8">
+     <meta content="width=device-width, initial-scale=1.0" name="viewport">
+ 
+     <title>Comparison - DataIns x NipponKoei</title>
+     <meta content="" name="description">
+     <meta content="" name="keywords">
+ 
+     <!-- Favicons -->
+     <link href="assets/img/favicon.png" rel="icon">
+     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+ 
+     <!-- Google Fonts -->
+     <link href="https://fonts.gstatic.com" rel="preconnect">
+     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet">
+ 
+     <!-- Vendor CSS Files -->
+     <link href="bootstrap.min.css" rel="stylesheet">
+ 
+     <!-- Template Main CSS File -->
+     <link href="style.css" rel="stylesheet">
+     <style>
+         html,
+         body,
+         #viewDiv {
+             padding: 0;
+             margin: 0;
+             height: 100%;
+             width: 100%;
+         }
+     </style>
+     <style>
+         html,
+         body,
+         #viewDiv {
+             padding: 0;
+             margin: 0;
+             height: 100%;
+             width: 100%;
+         }
+ 
+         #mainWindow {
+             padding: .5em;
+             background-color: #fff;
+         }
+ 
+         #mainWindow p,
+         #uploadForm {
+             display: block;
+             padding: .1em;
+         }
+     </style>
+     <style>
+         #hidden_div {
+             display: none;
+         }
+ 
+         html,
+         body,
+         #viewDiv {
+             padding: 0;
+             margin: 0;
+             height: 100%;
+             width: 100%;
+         }
+ 
+         .esri-view .esri-directions {
+             position: fixed;
+             right: 15px;
+             max-height: calc(100% - 45px) !important;
+         }
+ 
+         .esri-view .esri-component.esri-attribution {
+             position: fixed;
+         }
+ 
+         .esri-directions__scroller {
+             max-width: 250px !important;
+         }
+     </style>
+ 
+     <link rel="stylesheet" href="https://js.arcgis.com/4.21/esri/themes/light/main.css" />
+     <script src="https://js.arcgis.com/4.21/"></script>
+     <script>
+         var co = 10;
+         var carb = 0;
+         var res = 0;
+ 
+ 
+         require([
+             "esri/config",
+             "esri/Map",
+             "esri/views/MapView",
+             "esri/layers/GeoJSONLayer",
+             "esri/Graphic",
+             "esri/rest/route",
+             "esri/rest/support/RouteParameters",
+             "esri/rest/support/FeatureSet",
+             "esri/layers/FeatureLayer",
+             "esri/widgets/Legend"
+ 
+         ], function(esriConfig, Map, MapView, GeoJSONLayer, Graphic, route, RouteParameters, FeatureSet, FeatureLayer, Legend) {
+ 
+             esriConfig.apiKey = "AAPKd52317b65c434edda9cccd22db8d391838AU5Rj6LNfcRfZh2K4_C96xLKaIRl1OHKmMJNWuJmIhg67RLX7hh-z4ar7hJ-Li";
+             // const template = {
+             //     title: "Earthquake Info",
+             //     content: "Magnitude {mag} {type} hit {place} on {time}",
+             //     fieldInfos: [{
+             //         fieldName: 'time',
+             //         format: {
+             //             dateFormat: 'short-date-short-time'
+             //         }
+             //     }]
+             // };
+             // const less35 = {
+             //     type: "simple-fill", // autocasts as new SimpleFillSymbol()
+             //     color: "#fffcd4",
+             //     style: "solid",
+             //     outline: {
+             //         width: 0.2,
+             //         color: [255, 255, 255, 0.5]
+             //     }
+             // };
+ 
+             // const less50 = {
+             //     type: "simple-fill", // autocasts as new SimpleFillSymbol()
+             //     color: "#b1cdc2",
+             //     style: "solid",
+             //     outline: {
+             //         width: 0.2,
+             //         color: [255, 255, 255, 0.5]
+             //     }
+             // };
+ 
+             // const more50 = {
+             //     type: "simple-fill", // autocasts as new SimpleFillSymbol()
+             //     color: "#38627a",
+             //     style: "solid",
+             //     outline: {
+             //         width: 0.2,
+             //         color: [255, 255, 255, 0.5]
+             //     }
+             // };
+ 
+             // const more75 = {
+             //     type: "simple-fill", // autocasts as new SimpleFillSymbol()
+             //     color: "#0d2644",
+             //     style: "solid",
+             //     outline: {
+             //         width: 0.2,
+             //         color: [255, 255, 255, 0.5]
+             //     }
+             // };
+ 
+ 
+ 
+             const less35 = {
+                 type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                 color: "#ff2b2b",
+                 style: "solid",
+                 outline: {
+                     width: 0.2,
+                     color: [255, 255, 255, 0.5]
+                 }
+             };
+ 
+             const less50 = {
+                 type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                 color: "#ed8131",
+                 style: "solid",
+                 outline: {
+                     width: 0.2,
+                     color: [255, 255, 255, 0.5]
+                 }
+             };
+ 
+             const more50 = {
+                 type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                 color: "#38627a",
+                 style: "solid",
+                 outline: {
+                     width: 0.2,
+                     color: [255, 255, 255, 0.5]
+                 }
+             };
+ 
+             const more75 = {
+                 type: "simple-fill", // autocasts as new SimpleFillSymbol()
+                 color: "#0d2644",
+                 style: "solid",
+                 outline: {
+                     width: 0.2,
+                     color: [255, 255, 255, 0.5]
+                 }
+             };
+ 
+ 
+ 
+ 
+ 
+             const renderer = {
+                 type: "class-breaks",
+                 field: "spots_quad",
+                 legendOptions: {
+                     title: "% of adults (25+) with a college degree"
+                 },
+                 defaultSymbol: {
+                     type: "simple-fill",
+                     color: "black",
+                     style: "backward-diagonal",
+                     outline: {
+                         width: 0.5,
+                         color: [50, 50, 50, 0.6]
+                     }
+                 },
+                 defaultLabel: "no data",
+                 classBreakInfos: [{
+                         minValue: 0,
+                         maxValue: 1,
+                         symbol: less35,
+                         label: "Housing low Transport low"
+                     },
+                     {
+                         minValue: 1,
+                         maxValue: 2,
+                         symbol: less50,
+                         label: "Housing High Transport Low"
+                     },
+                     {
+                         minValue: 2,
+                         maxValue: 3,
+                         symbol: more50,
+                         label: "Housing Low Transport High"
+                     },
+                     {
+                         minValue: 3,
+                         maxValue: 4,
+                         symbol: more75,
+                         label: "Housing High Transport High"
+                     }
+                 ]
+             };
+ 
+             const renderer2 = {
+                 type: "simple",
+                 field: "mag",
+                 symbol: {
+                     type: "simple-marker",
+                     color: [51, 51, 204, 0.3]
+                 }
+             };
+             const renderer3 = {
+                 type: "simple",
+                 field: "mag",
+                 symbol: {
+                     type: "simple-line",
+                     color: [51, 51, 204, 1],
+                 }
+             };
+             const renderer4 = {
+                 type: "simple",
+                 field: "mag",
+                 symbol: {
+                     type: "simple-line",
+                     color: "black",
+                 }
+             };
+             const geojsonLayer = new GeoJSONLayer({
+                 url: "https://dhik.github.io/data_import/lisa2.geojson",
+                 title: "LISA Region Jakarta",
+                 renderer: renderer,
+                 popupTemplate: {
+                     title: "Block Region" + "{is_in_muni}",
+                     content: "{Population}"
+                 },
+                 opacity: 0.5
+             });
+ 
+             const map = new Map({
+                 basemap: "arcgis-navigation", //Basemap layer service
+                 layers: [geojsonLayer]
+             });
+             require(["esri/layers/GeoJSONLayer"], function(GeoJSONLayer) {
+                 // points to the states layer in a service storing U.S. census data
+                 const geojsonlayer = new GeoJSONLayer({
+                     url: "https://dhik.github.io/data_import/stasiun_ALL.geojson",
+                     copyright: "USGS Earthquakes",
+                     renderer: renderer2
+                 });
+                 map.add(geojsonlayer); // adds the layer to the map
+             });
+             // require(["esri/layers/GeoJSONLayer"], function(GeoJSONLayer) {
+             //     // points to the states layer in a service storing U.S. census data
+             //     const geojsonlayer = new GeoJSONLayer({
+             //         url: "https://dhik.github.io/data_import/jalur_transjakarta.geojson",
+             //         copyright: "USGS Earthquakes",
+             //         renderer: renderer3
+             //     });
+             //     map.add(geojsonlayer); // adds the layer to the map
+             // });
+ 
+             require(["esri/layers/GeoJSONLayer"], function(GeoJSONLayer) {
+                 const geojsonlayer = new GeoJSONLayer({
+                     url: "https://dhik.github.io/data_import/jalur_kereta_jabodetabek.geojson",
+                     copyright: "USGS Earthquakes",
+                     renderer: renderer4
+                 });
+                 map.add(geojsonlayer);
+             });
+             // map.addLayer(geoJsonLayer2);
+             const view = new MapView({
+                 container: "viewDiv",
+                 map: map,
+                 center: [106.8111, -6.2246], // Jakarta
+                 zoom: 11
+             });
+             const trailheadsLayer = new FeatureLayer({
+                 url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trailheads/FeatureServer/0"
+             });
+             map.add(trailheadsLayer);
+             const trailsLayer = new FeatureLayer({
+                 url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Trails/FeatureServer/0"
+             });
+             map.add(trailsLayer, 0);
+             const parksLayer = new FeatureLayer({
+                 url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/Parks_and_Open_Space/FeatureServer/0"
+             });
+             map.add(parksLayer, 0);
+             const routeUrl = "https://route-api.arcgis.com/arcgis/rest/services/World/Route/NAServer/Route_World";
+ 
+             view.on("click", function(event) {
+ 
+                 if (view.graphics.length === 0) {
+                     addGraphic("origin", event.mapPoint);
+                 } else if (view.graphics.length === 1) {
+                     addGraphic("destination", event.mapPoint);
+ 
+                     getRoute(); // Call the route service
+ 
+                 } else {
+                     view.graphics.removeAll();
+                     addGraphic("origin", event.mapPoint);
+                 }
+ 
+             });
+ 
+             function addGraphic(type, point) {
+                 const graphic = new Graphic({
+                     symbol: {
+                         type: "simple-marker",
+                         color: (type === "origin") ? "white" : "black",
+                         size: "8px"
+                     },
+                     geometry: point
+                 });
+                 view.graphics.add(graphic);
+             }
+ 
+             function getRoute() {
+                 const routeParams = new RouteParameters({
+                     stops: new FeatureSet({
+                         features: view.graphics.toArray()
+                     }),
+ 
+                     returnDirections: true
+ 
+                 });
+ 
+                 route.solve(routeUrl, routeParams)
+                     .then(function(data) {
+                         data.routeResults.forEach(function(result) {
+                             result.route.symbol = {
+                                 type: "simple-line",
+                                 color: [5, 150, 255],
+                                 width: 3
+                             };
+                             view.graphics.add(result.route);
+                         });
+ 
+                         // Display directions
+                         if (data.routeResults.length > 0) {
+                             const directions = document.createElement("ol");
+                             directions.classList = "esri-widget esri-widget--panel esri-directions__scroller";
+                             directions.style.marginTop = "0";
+                             directions.style.padding = "15px 15px 15px 30px";
+                             const features = data.routeResults[0].directions.features;
+ 
+                             // Show each direction
+                             var distance = 0;
+                             features.forEach(function(result, i) {
+                                 // const direction = document.createElement("li");
+                                 // direction.innerHTML = result.attributes.text + " (" + result.attributes.length.toFixed(2) + " miles)";
+                                 // directions.appendChild(direction);
+                                 distance = distance + (Number(result.attributes.length.toFixed(2)) * 1.60934);
+                             });
+                             // console.log(distance);
+                             document.getElementById("dist").innerHTML = Math.round(distance * 100) / 100;
+                             document.getElementById("dist2").innerHTML = Math.round(distance * 100) / 100;
+                             carb = (Math.round(distance * 100) / 100);
+                             res = Math.round(carb * 100) / 100;
+ 
+                             view.ui.empty("top-right");
+                             view.ui.add(directions, "top-right");
+ 
+                         }
+                         console.log(res);
+ 
+                     })
+ 
+                 // .catch(function(error) {
+                 //     console.log(error);
+                 // })
+ 
+             }
+ 
+         });
+ 
+         function showDiv(element) {
+             if (element.value == 'Bus') {
+                 var co = 104.71;
+                 document.getElementById("carb").innerHTML = Math.round(res * co * 100) / 100;
+                 var rss = ((3500 * 2 * 30) / 7601612.9) * 100
+                 document.getElementById("tper").innerHTML = Math.round(rss * 100) / 100;
+             } else if (element.value == 'Car') {
+                 var co = 192.28;
+                 document.getElementById("carb").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 4) {
+                     rss = 10000
+                 } else {
+                     rss = 10000 + ((res - 4) * 2000)
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tper").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'Gojek') {
+                 var co = 192.28;
+                 document.getElementById("carb").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 4) {
+                     rss = 11200
+                 } else {
+                     rss = 11200 + ((res - 4) * 2800)
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tper").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'Grab') {
+                 var co = 192.28;
+                 document.getElementById("carb").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 4) {
+                     rss = 11200
+                 } else {
+                     rss = 11200 + ((res - 4) * 2800)
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tper").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'Commuter Line') {
+                 var co = 35.08;
+                 document.getElementById("carb").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 25) {
+                     rss = 5000
+                 } else {
+                     rss = 5000 + ((res - 25) / 10) * 1000
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tper").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'MRT') {
+                 var co = 30;
+                 document.getElementById("carb").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 1) {
+                     rss = 4000
+                 } else {
+                     rss = 4000 + (res / 3) * 1000
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100
+                 document.getElementById("tper").innerHTML = Math.round(cos * 100) / 100;
+             } else {
+                 var co = 20;
+             }
+         }
+ 
+         function showDivi(element) {
+             if (element.value == 'Bus') {
+                 var co = 104.71;
+                 document.getElementById("carb2").innerHTML = Math.round(res * co * 100) / 100;
+                 var rss = ((3500 * 2 * 30) / 7601612.9) * 100
+                 document.getElementById("tpe2").innerHTML = Math.round(rss * 100) / 100;
+             } else if (element.value == 'Car') {
+                 var co = 192.28;
+                 document.getElementById("carb2").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 4) {
+                     rss = 10000
+                 } else {
+                     rss = 10000 + ((res - 4) * 2000)
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tpe2").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'Gojek') {
+                 var co = 192.28;
+                 document.getElementById("carb2").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 4) {
+                     rss = 11200
+                 } else {
+                     rss = 11200 + ((res - 4) * 2800)
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tpe2").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'Grab') {
+                 var co = 192.28;
+                 document.getElementById("carb2").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 4) {
+                     rss = 11200
+                 } else {
+                     rss = 11200 + ((res - 4) * 2800)
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tpe2").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'Commuter Line') {
+                 var co = 35.08;
+                 document.getElementById("carb2").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 25) {
+                     rss = 5000
+                 } else {
+                     rss = 5000 + ((res - 25) / 10) * 1000
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100;
+                 document.getElementById("tpe2").innerHTML = Math.round(cos * 100) / 100;
+             } else if (element.value == 'MRT') {
+                 var co = 30;
+                 document.getElementById("carb2").innerHTML = Math.round(res * co * 100) / 100;
+                 if (res < 1) {
+                     rss = 4000
+                 } else {
+                     rss = 4000 + (res / 3) * 1000
+                 }
+                 var cos = ((rss * 60) / 7601612.9) * 100
+                 document.getElementById("tpe2").innerHTML = Math.round(cos * 100) / 100;
+             } else {
+                 var co = 20;
+             }
+         }
+     </script>
+ </head>
+ 
+ <body>
+ 
+     <!-- ======= Header ======= -->
+     <header id="header" class="header fixed-top d-flex align-items-center">
+ 
+         <div class="d-flex align-items-center justify-content-between">
+             <a href="index.html" class="logo d-flex align-items-center">
+                 <img src="assets/img/logo.png" alt="">
+                 <span class="d-none d-lg-block" style="font-size: 20px;">DataIns x Nippon Koei</span>
+             </a>
+         </div><!-- End Logo -->
+ 
+         <nav class="header-nav ms-auto">
+             <ul class="d-flex align-items-center">
+ 
+                 <li class="nav-item d-block d-lg-none">
+                     <a class="nav-link nav-icon search-bar-toggle " href="#">
+                         <i class="bi bi-search"></i>
+                     </a>
+                 </li><!-- End Search Icon-->
+ 
+ 
+                 <li class="nav-item dropdown pe-3">
+ 
+                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="index.html" data-bs-toggle="dropdown">
+                         <span>Transport Affordability</span>
+                     </a>
+                 </li>
+                 <li class="nav-item dropdown pe-3">
+ 
+                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                         <span>Comparison</span>
+                     </a>
+                 </li>
+                 <li class="nav-item dropdown pe-3">
+ 
+                     <a class="nav-link nav-profile d-flex align-items-center pe-0" href="h+t.html" data-bs-toggle="dropdown">
+                         <span>H+T Analytics</span>
+                     </a>
+                 </li>
+             </ul>
+         </nav><!-- End Icons Navigation -->
+ 
+     </header><!-- End Header -->
+ 
+     <main id="main" class="main">
+         <div class="pagetitle">
+             <h1>Comparison</h1>
+             <nav>
+                 <ol class="breadcrumb">
+                     <li class="breadcrumb-item"><a href="index.html">Home</a></li>
+                     <li class="breadcrumb-item active">Comparison</li>
+                 </ol>
+             </nav>
+         </div><!-- End Page Title -->
+         <section class="section dashboard">
+             <div class="col-lg-12">
+                 <div id="viewDiv"></div>
+             </div>
+             </br>
+             <div class="row">
+                 <!-- <div class="col-md-12">
+                     <div class="card info-card sales-card">
+ 
+                         <div class="card-body">
+                             <h5 class="card-title">Input</h5>
+                             <div class="col-md-12">
+                                 <label for="inputName5" class="form-label">Destination</label>
+                                 <input type="text" class="form-control" id="inputName5">
+                             </div>
+                             <div class="col-md-12">
+                                 <label for="inputName5" class="form-label">Origin</label>
+                                 <input type="text" class="form-control" id="inputName5">
+                             </div>
+                         </div>
+ 
+                     </div>
+                 </div> -->
+                 <div class="col-xxl-4 col-md-4">
+                     <div class="card info-card sales-card">
+ 
+                         <div class="card-body">
+                             <h5 class="card-title">Mode of Transport</h5>
+                             <div class="col-md-12">
+                                 <label for="inputState" class="form-label">Mode of Transportation</label>
+                                 <select id="test" class="form-select" onchange="showDiv(this)">
+                                     <option selected>Choose...</option>
+                                     <option value="Bus">Bus</option>
+                                     <!-- <option value="Train">Train</option> -->
+                                     <option value="Car">Car</option>
+                                     <option value="Gojek">Gojek</option>
+                                     <option value="Grab">Grab</option>
+                                     <option value="Commuter Line">Commuter Line</option>
+                                     <option value="MRT">MRT</option>
+                                 </select>
+                             </div>
+                         </div>
+ 
+                     </div>
+                 </div>
+                 <div class="col-lg-8">
+                     <div class="row">
+                         <div class="col-xxl-4 col-md-4">
+                             <div class="card info-card sales-card">
+ 
+                                 <div class="card-body">
+                                     <h5 class="card-title">Distance</h5>
+ 
+                                     <div class="d-flex align-items-center">
+                                         <div class="ps-3">
+                                             <h6>
+                                                 <span id="dist"></span> KM
+                                             </h6>
+                                         </div>
+                                     </div>
+                                 </div>
+ 
+                             </div>
+                         </div>
+                         <div class="col-xxl-4 col-md-4">
+                             <div class="card info-card revenue-card">
+ 
+                                 <div class="card-body">
+                                     <h5 class="card-title">Percentage of Income Spend on Transportation (monthly)</h5>
+ 
+                                     <div class="d-flex align-items-center">
+                                         <div class="ps-3">
+                                             <h6>
+                                                 <span id="tper"></span> %
+                                             </h6>
+                                         </div>
+                                     </div>
+                                 </div>
+ 
+                             </div>
+                         </div>
+                         <div class="col-xxl-4 col-md-4">
+                             <div class="card info-card revenue-card">
+ 
+                                 <div class="card-body">
+                                     <h5 class="card-title">GHG Emission</h5>
+ 
+                                     <div class="d-flex align-items-center">
+                                         <div class="ps-3">
+                                             <h6>
+                                                 <span id="carb"></span> gr
+                                             </h6>
+                                         </div>
+                                     </div>
+                                 </div>
+ 
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+             </br>
+             <div class="row" style="height: 500px !important;">
+                 <div class="col-xxl-4 col-md-4">
+                     <div class="card info-card sales-card">
+ 
+                         <div class="card-body">
+                             <h5 class="card-title">Mode of Transport</h5>
+                             <div class="col-md-12">
+                                 <label for="inputState" class="form-label">Mode of Transportation</label>
+                                 <select id="test" class="form-select" onchange="showDivi(this)">
+                                     <option selected>Choose...</option>
+                                     <option value="Bus">Bus</option>
+                                     <!-- <option value="Train">Train</option> -->
+                                     <option value="Car">Car</option>
+                                     <option value="Gojek">Gojek</option>
+                                     <option value="Grab">Grab</option>
+                                     <option value="Commuter Line">Commuter Line</option>
+                                     <option value="MRT">MRT</option>
+                                 </select>
+                             </div>
+                         </div>
+ 
+                     </div>
+                 </div>
+                 <div class="col-lg-8">
+                     <div class="row">
+                         <div class="col-xxl-4 col-md-4">
+                             <div class="card info-card sales-card">
+ 
+                                 <div class="card-body">
+                                     <h5 class="card-title">Distance</h5>
+ 
+                                     <div class="d-flex align-items-center">
+                                         <div class="ps-3">
+                                             <h6>
+                                                 <span id="dist2"></span> KM
+                                             </h6>
+                                         </div>
+                                     </div>
+                                 </div>
+ 
+                             </div>
+                         </div>
+                         <div class="col-xxl-4 col-md-4">
+                             <div class="card info-card revenue-card">
+ 
+                                 <div class="card-body">
+                                     <h5 class="card-title">Percentage of Income Spend on Transportation (monthly)</h5>
+ 
+                                     <div class="d-flex align-items-center">
+                                         <div class="ps-3">
+                                             <h6>
+                                                 <span id="tpe2"></span> %
+                                             </h6>
+                                         </div>
+                                     </div>
+                                 </div>
+ 
+                             </div>
+                         </div>
+                         <div class="col-xxl-4 col-md-4">
+                             <div class="card info-card revenue-card">
+ 
+                                 <div class="card-body">
+                                     <h5 class="card-title">GHG Emission</h5>
+ 
+                                     <div class="d-flex align-items-center">
+                                         <div class="ps-3">
+                                             <h6>
+                                                 <span id="carb2"></span> gr
+                                             </h6>
+                                         </div>
+                                     </div>
+                                 </div>
+ 
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+ 
+         </section>
+ 
+     </main><!-- End #main -->
+ 
+     <!-- ======= Footer ======= -->
+     <footer id="footer" class="footer">
+         <div class="copyright">
+             &copy; <strong><span>DataIns x Nippon Koei</span></strong>
+         </div>
+     </footer><!-- End Footer -->
+ </body>
+ 
+ </html>
